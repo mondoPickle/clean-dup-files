@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+import os
+import hashlib
+import argparse
+
+def hash_file(path, chunk_size=8192):
+    hasher = hashlib.sha256()
+    with open(path, 'rb') as f:
+        while chunk := f.read(chunk_size):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+def find_duplicates(directory):
+    hashes = {}
+    duplicates = []
+
+    for root, _, files in os.walk(directory):
+        for file in files:
+            filepath = os.path.join(root, file)
+            try:
+                filehash = hash_file(filepath)
+                if filehash in hashes:
+                    duplicates.append((filepath, hashes[filehash]))
+                else:
+                    hashes[filehash] = filepath
+            except Exception as e:
+                print(f"Could not read {filepath}: {e}")
+    return duplicates
+
+def main():
+    parser = argparse.ArgumentParser(description="Find duplicate files in a directory.")
+    parser.add_argument("directory", help="Directory to scan for duplicates")
+    parser.add_argument("-d", "--delete", action="store_true", help="Delete duplicates after listing")
+    args = parser.parse_args()
+
+    duplicates = find_duplicates(args.directory)
+    if not duplicates:
+        print("No duplicate files found.")
+        return
+
+    print("Duplicate files found:")
+    for dup, orig in duplicates:
+        print(f"Duplicate: {dup}\nOriginal: {orig}\n")
+
+    if args.delete:
+        confirm = input("Are you sure you want to delete all duplicates? (y/n): ")
+        if confirm.lower() == 'y':
+            for dup, _ in duplicates:
+                os.remove(dup)
+            print("Duplicates deleted.")
+        else:
+            print("Deletion canceled.")
+
+if __name__ == "__main__":
+    main()
