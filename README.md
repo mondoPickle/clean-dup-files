@@ -1,6 +1,6 @@
 # clean-dup-files
 
-[![License: LGPL](https://img.shields.io/badge/License-LGPL-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.6%2B-blue.svg)]()
 
 A simple and fast CLI tool to **find and optionally delete duplicate files** in a directory based on file content hashing.
